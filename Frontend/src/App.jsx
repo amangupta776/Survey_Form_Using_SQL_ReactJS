@@ -12,7 +12,7 @@ function App() {
   const [selectedOption, setSelectedOption] = useState({});
   const [error, setError] = useState(null);
   const [val, setVal] = useState(1); // State variable for handling submission
-
+  const[btnVal,setBtnVal]=useState(true)
   // Fetch questions and options data on component mount
   useEffect(() => {
     const fetchData = async () => {
@@ -40,6 +40,7 @@ function App() {
 
   // Function to handle user's answer selection
   const handleAnswer = (optionNumber, questionId) => {
+     setVal(val + 1);
     // Filter the next set of questions based on user's selection
     const nextQuestions = questions.filter(
       question =>
@@ -94,13 +95,19 @@ function App() {
                       name={`option-${option.question_id}`} // Include question ID in name attribute
                       value={option.text}
                       onClick={() => {
-                        // Update responses array when user selects an option
+                        
+                        // If it hasn't, add a new response
                         const newResponses = [...responses, { user_id: 1, question_id: option.question_id, option_number: option.option_number }];
                         setResponses(newResponses);
-                        if (option.question_id != 2 && option.question_id != 4) {
-                          // Set selected option when user selects an option
+                        
+                        
+                        // Set selected option when user selects an option (if applicable)
+                        if (option.question_id !== 2 && option.question_id !== 4) {
+                          setBtnVal(false)
                           setSelectedOption({ optionNumber: option.option_number, questionId: option.question_id });
+                         
                         }
+
                       }}
                       required
                     />
@@ -111,9 +118,10 @@ function App() {
           </div>
         ))}
         {/* Conditional rendering of submit button based on the value of 'val' state */}
-        {(val != 3) ? <button onClick={() => { handleAnswer(selectedOption.optionNumber, selectedOption.questionId); setVal(val + 1); }}>
+        {(val != 3) ? <button disabled={btnVal} onClick={() => { handleAnswer(selectedOption.optionNumber, selectedOption.questionId);  }}>
           Submit
-        </button> : <button onClick={() => {
+        </button> : <button onClick={() => { 
+        
           handleSubmit();
           handleAnswer(selectedOption.optionNumber, selectedOption.questionId);
         }}>Submit your responses</button>}
